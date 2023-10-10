@@ -1,0 +1,61 @@
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+  - docassemble.AKA2JBranding:custom_organization.yml
+  
+---
+objects: 
+  - children: DAList.using(ask_number=True, object_type=Individual)
+---
+id: children
+question: |
+  Do you have any children?
+fields:
+  - no label: children.there_are_any
+    datatype: yesnoradio
+  - How many children do you have?: children.target_number
+    datatype: integer
+    show if: children.there_are_any
+---
+id: Information about your child
+sets:
+  - children[0].name.first
+  - children[0].name.last
+  - children[0].birthdate
+question: |
+  kids names and birthdate
+fields:  
+  #  - code: |
+  #    children.name_fields()
+  - First name: children[0].name.first
+  - Last name: children[0].name.last
+  - Date of birth: children[0].birthdate
+    datatype: date
+---
+id: Information about your 2ND child
+sets:
+  - children[i].name.first
+  - children[i].name.last
+  - children[i].birthdate
+question: |
+  other kids names and birthdates
+fields:  
+  #  - code: |
+  #    children.name_fields()
+  - First name: children[i].name.first
+  - Last name: children[i].name.last
+  - Date of birth: children[i].birthdate
+    datatype: date
+---
+mandatory: true
+event: ending_screen
+question: |
+  These are the names of your children and their birthdates
+subquestion: |
+  % if children.target_number >= 1:
+
+    Name | Age
+    -----|----
+    % for child in children:
+    ${ child } | ${ child.age_in_years() }
+    % endfor
+    % endif

@@ -1,0 +1,44 @@
+---
+objects: 
+  - children: DAList.using(ask_number=True, object_type=Individual)
+---
+id: children
+question: |
+  Do you have any children?
+fields:
+  - no label: children.there_are_any
+    datatype: yesnoradio
+  - How many children do you have?: children.target_number
+    datatype: integer
+    show if: children.there_are_any
+---
+id: Information about children
+question: |
+  % if children.target_number > 1:
+  % if  i == 0 :
+  What is your oldest child’s name and birthday?
+  % else:
+  What is your ${ordinal(i)} child’s name and birthday?
+  % endif
+  % else:
+  What is your child’s name and birthday?
+  % endif
+fields: 
+  - First name: children[i].name.first
+  - Last name: children[i].name.last
+  - Date of birth: children[i].birthdate
+    datatype: date
+---
+mandatory: true
+event: ending_screen
+question: |
+  These are the names of your children and their birthdates
+subquestion: |
+  % if children.target_number >= 1:
+
+    Name | Age
+    -----|----
+    % for child in children:
+    ${ child } | ${ child.age_in_years() }
+    % endfor
+    % endif
